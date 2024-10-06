@@ -35,5 +35,22 @@ namespace SalesWebMvc.Services
             _context.Seller.Remove(obj);
             _context.SaveChanges();
         }
+
+        public void Update(Seller obj)
+        {
+            if (!_context.Seller.Any(x => x.Id == obj.Id))
+            {
+                throw new DirectoryNotFoundException("Id not found");
+            }
+            
+            try
+            {
+                _context.Update(obj);
+                _context.SaveChanges();
+            } catch (DbUpdateConcurrencyException ex)
+            {
+                throw new DbUpdateConcurrencyException(ex.Message);
+            }
+        }
     }
 }

@@ -5,10 +5,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SalesWebMvcContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SalesWebMvcContext"), new MySqlServerVersion(new Version(8, 0, 21)), builder => builder.MigrationsAssembly("SalesWebMvc")));
 
+builder.Services.AddScoped<SeedingService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var seedingService = services.GetRequiredService<SeedingService>();
+
+    seedingService.Seed();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
